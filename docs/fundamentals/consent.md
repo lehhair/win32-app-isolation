@@ -1,42 +1,31 @@
-# Consent for Isolated Win32 Apps
+# 独立 Win32 应用的许可
 
-## How file access consent is granted
+## 如何授予文件访问许可
 
-Consent is granted for Isolated Win32 Apps in three ways.
- 
-1. Implicit-Consent: Apps are implicitly granted access to files and folders through the flows
-listed below. 
+独立 Win32 应用有三种方式授予许可。
 
-    * File Dialog: Files and folders that are selected or created through Window's file dialog
-    created from an isolated app.
+1. 隐式许可：应用程序通过以下流程隐式地访问文件和文件夹。
 
-    * File Type Assocition: Apps that register FTA in the manifest will show up under the open-with
-    context menu and can be set as the default app. 
-        * Apps that do this through a COM extension will need the 
-        `isolatedWin32-shellExtensionContextMenu` capability.
+    * 文件对话框：通过独立应用程序创建的 Windows 文件对话框选择或创建的文件和文件夹。
 
-    * Drag and Drop: Apps that register drag and drop handlers will have access to any files and
-    folders dragged onto them.
-        * There is currently no support for dragging between different Isolated Win32 Apps.
+    * 文件类型关联：在清单中注册 FTA 的应用程序将显示在“打开方式”上下文菜单下，并可设置为默认应用程序。
+        * 通过 COM 扩展进行此操作的应用程序将需要 `isolatedWin32-shellExtensionContextMenu` 功能。
 
-2. Publisher Directory: If the application has the `isolatedWin32-accessToPublisherDirectory` 
-capability, then the app will have full access to:
+    * 拖放：注册拖放处理程序的应用程序将访问拖放到它们上的任何文件和文件夹。
+        * 目前不支持在不同的独立 Win32 应用程序之间拖放。
 
-    * Network shares whose share name ends with the publisher ID of the app.
+2. 发布者目录：如果应用程序具有 `isolatedWin32-accessToPublisherDirectory` 功能，则该应用程序将完全访问：
 
-    * Directories with names ending with the publisher ID of the app located in
-    `\Device\BootDevice\ProgramData`.
+    * 共享名称以应用程序发布者 ID 结尾的网络共享。
 
-3. Prompting: If the application has the `isolatedWin32-promptForAccess` capability, the first time
-the app attempts to access a file or directory, a prompt will be generated for the user to accept
-or decline. The choice will be saved until the consent is revoked
+    * 以应用程序发布者 ID 结尾的名称位于 `\Device\BootDevice\ProgramData` 中的目录。
 
-## How consent is revoked
+3. 提示：如果应用程序具有 `isolatedWin32-promptForAccess` 功能，则第一次尝试访问文件或目录时，将生成提示供用户接受或拒绝。选择将保存，直到撤销许可为止。
 
-Consent can currently be revoked in two ways.
+## 如何撤销许可
 
-1. Settings: Through the settings, navigate to "Reset file permissions on isolated Win32 
-applications". On this page you can fully reset the consent granted to specific isolated apps. This
-will reset both prompted and implicit consent, but won't affect the publisher directory.
+目前有两种方法可以撤销许可。
 
-2. Uninstall: During uninstall, all consent will be revoked.
+1. 设置：通过设置，导航到“重置独立 Win32 应用程序上的文件权限”。在此页面上，您可以完全重置授予特定独立应用程序的许可。这将重置提示和隐式许可，但不会影响发布者目录。
+
+2. 卸载：在卸载期间，将撤销所有许可。
