@@ -1,110 +1,88 @@
-# Table of Contents
-1. [Convert an existing win32 installer into an .msix app](#Win32-->-msix)
-2. [Convert an existing .msix app to run isolated](#MSIX-->-Isolated-Win32)
+# 目录
 
-## Overview
+1. [将现有的 win32 安装程序转换为 .msix 应用程序](#Win32-->-msix)
 
-This page will cover everything needed to package an existing MSIX or win32 application into
-an isolated Win32 app. This will be done through the MSIX Packaging Tool (MPT). **Note** that the
-version of MPT that supports Win32 app isolation is v1.2023.517.0, available in the release assets
-of this project. The [store version of MPT](https://learn.microsoft.com/en-us/windows/msix/packaging-tool/tool-overview) 
-is **outdated** for the purposes of the Win32 app isolation feature. You can find additional 
-documentation for MPT [here](https://learn.microsoft.com/en-us/windows/msix/packaging-tool/tool-overview).
+2. [将现有的 .msix 应用程序转换为隔离的 Win32 应用程序](#MSIX-->-Isolated-Win32)
 
-You can find the download for MPT, as well as the profiler, in the [releases](https://github.com/microsoft/win32-app-isolation/releases) section of the github.
+## 概述
+
+本页面将介绍将现有的 MSIX 或 win32 应用程序打包为隔离的 Win32 应用程序所需的所有内容。这将通过 MSIX 打包工具 (MPT) 完成。**请注意**，支持 Win32 应用程序隔离的 MPT 版本为 v1.2023.517.0，可在此项目的发布资产中找到。[商店版本的 MPT](https://learn.microsoft.com/en-us/windows/msix/packaging-tool/tool-overview) 对于 Win32 应用程序隔离功能来说是**过时的**。您可以在此处找到 MPT 的其他文档 [here](https://learn.microsoft.com/en-us/windows/msix/packaging-tool/tool-overview)。
+
+您可以在 github 的 [releases](https://github.com/microsoft/win32-app-isolation/releases) 部分找到 MPT 的下载以及分析器。
 
 ## Win32 -> MSIX
 
-1. Select "Application Package" on the far left and choose where the package will be created.
-This flow will follow the "Create package on this computer" option. **Note** This will result 
-in the app installed as a normal win32 after finishing step 5.
+1. 在最左侧选择“应用程序包”，并选择要创建包的位置。此流程将遵循“在此计算机上创建包”选项。**请注意**，完成第 5 步后，这将导致应用程序安装为普通的 win32。
 
     ![image](images/01-packaging-main-menu.png)
 
-2. Wait for the "MSIX Packaging Tool Driver" field to finish checking
+2. 等待“MSIX 打包工具驱动程序”字段完成检查
 
     ![image](images/02-packaging-prepare.png)
 
-3. Use the browse button to navigate to and select the win32 installer. Leave signing preference
-blank as we will need to edit the manifest and sign it again.
+3. 使用浏览按钮导航到并选择 win32 安装程序。将签名首选项留空，因为我们需要编辑清单并再次签名。
 
     ![image](images/03-packaging-installer.png)
 
-4. Enter the package information.
+4. 输入包信息。
 
     ![image](images/04-packaging-package-info.png)
 
-5. Go through the win32 installer as normal
+5. 按照 win32 安装程序的常规步骤进行操作
 
-6. If there are additional entry points besides the main one, launch or browse to them. If the app
-has options for File Type Association in settings/config/preferences, toggle them at this step so
-MSIX will pick up on them
+6. 如果除主要入口点之外还有其他入口点，请启动或浏览到它们。如果应用程序在设置/配置/首选项中具有文件类型关联选项，请在此步骤中切换它们，以便 MSIX 可以识别它们。
 
-7. Repeat the same process if there are services in the package
+7. 如果包中有服务，请重复相同的过程
 
-8. Clicking Create will save the package as a full trust package. Click the "Package Editor" button
-to go to the "Package Editor" flow from the main menu. This can take up to several minutes depending
-on the size of the package.
+8. 单击“创建”将包保存为完全信任的包。单击“包编辑器”按钮，从主菜单进入“包编辑器”流程。这可能需要几分钟，具体取决于包的大小。
 
     ![image](images/05-packaging-create-package.png)
 
-## MSIX -> Isolated Win32
+## MSIX -> 隔离的 Win32
 
-1. Select the far right option "Package editor" and browse to the .msix file and click the
-"Open package" button.
+1. 选择最右侧的选项“包编辑器”，浏览到 .msix 文件，然后单击“打开包”按钮。
 
     ![image](images/01-packaging-main-menu.png)
 
-2. Scroll down to the "Manifest file" section and click "Open file"
+2. 滚动到“清单文件”部分，然后单击“打开文件”。
 
     ![image](images/10-packaging-package-editor.png)
 
-    In the manifest, the following changes will need to be made.
+    在清单文件中，需要进行以下更改。
 
-    **Note**: Isolated win32 applications are not compatible with other application types within the same package.
+    **注意**：隔离的 Win32 应用程序与同一包中的其他应用程序类型不兼容。
 
-    * Add `xmlns:previewsecurity2="http://schemas.microsoft.com/appx/manifest/preview/windows10/security/2"`
-    to the `<Package>` element
+    * 在 `<Package>` 元素中添加 `xmlns:previewsecurity2="http://schemas.microsoft.com/appx/manifest/preview/windows10/security/2"`
 
-    * Add `previewsecurity2` to `IgnorableNamespaces` at the end of the `<Package>` element
+    * 在 `<Package>` 元素的末尾的 `IgnorableNamespaces` 中添加 `previewsecurity2`
 
-    * In `<Dependencies>` change `TargetDeviceFamily` to
-    `<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.25357.0" MaxVersionTested="10.0.25357.0" />`
+    * 在 `<Dependencies>` 中将 `TargetDeviceFamily` 更改为 `<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.25357.0" MaxVersionTested="10.0.25357.0" />`
 
-        * **Note**: Not all features are available in the minimun build, check out the [release notes](../../relnotes/windows-release-notes.md) for more detailed information.
+        * **注意**：并非所有功能都在最小版本中可用，请查看[发布说明](../../relnotes/windows-release-notes.md)以获取更详细的信息。
 
-    * In `<Application>` replace any existing entrypoint/trustlevel/runtimebehavior with
-    `uap10:TrustLevel="appContainer" previewsecurity2:RuntimeBehavior="appSilo"`
+    * 在 `<Application>` 中，将任何现有的 entrypoint/trustlevel/runtimebehavior 替换为 `uap10:TrustLevel="appContainer" previewsecurity2:RuntimeBehavior="appSilo"`
 
-    * **Note**: By default, MPT will automatically add `<rescap:Capability name="runFullTrust">` to
-    `<Capabilities>` due to the app being a packaged Win32. This should be removed unless
-    the app has other manifested extensions which can affect the user global state, such as
-    `comServer` or `FirewallRules`, since those require the `runFullTrust` capability.
+    * **注意**：默认情况下，MPT 将自动将 `<rescap:Capability name="runFullTrust">` 添加到 `<Capabilities>` 中，因为应用程序是打包的 Win32。除非应用程序具有其他可以影响用户全局状态的清单扩展，例如 `comServer` 或 `FirewallRules`，否则应将其删除，因为这些扩展需要 `runFullTrust` 权限。
 
     ![image](images/11-packaging-manifest.png)
 
-3. The app might need additional capabilities to function correctly now that it has been isolated.
+3. 应用程序可能需要其他功能才能正确运行，因为它已被隔离。
 
-    These capabilities directly add functionality back to isolated apps.
+    这些功能直接将功能添加回隔离的应用程序。
 
-    * `isolatedWin32-print` - Print documents
-    * `isolatedWin32-sysTrayIcon` - Display notifications from the Systray
-    * `isolatedWin32-shellExtensionContextMenu` - Display COM-based context menu entries
-    * `isolatedWin32-promptForAccess` - Prompt Users for file access
-    * `isolatedWin32-accessToPublisherDirectory` - Access to directories that end with the publisher ID
+    * `isolatedWin32-print` - 打印文档
+    * `isolatedWin32-sysTrayIcon` - 显示来自系统托盘的通知
+    * `isolatedWin32-shellExtensionContextMenu` - 显示基于 COM 的上下文菜单条目
+    * `isolatedWin32-promptForAccess` - 提示用户访问文件
+    * `isolatedWin32-accessToPublisherDirectory` - 访问以发布者 ID 结尾的目录
 
-    These capabilities allow minimal access to libraries such as MSVC runtime or other Windows/3rd
-    Party DLLs for applications that don't support prompting.
+    这些功能允许应用程序最小限度地访问库，例如 MSVC 运行时或其他 Windows/第三方 DLL，适用于不支持提示的应用程序。
 
     * `isolatedWin32-dotNetBreadcrumbStore`
     * `isolatedWin32-profilesRootMinimal`
     * `isolatedWin32-userProfileMinimal`
     * `isolatedWin32-volumeRootMinimal`
 
-4. Save and close the manifest window. If there are any errors in the manifest, MPT will display
-them. Select Create/Save to generate the .msix file. This can take serveral minutes depending on 
-the size of the package
+4. 保存并关闭清单窗口。如果清单中有任何错误，MPT 将显示它们。选择“创建/保存”以生成 .msix 文件。这可能需要几分钟，具体取决于包的大小。
 
-5. See [application capability profiler](../profiler/application-capability-profiler.md) for
-information on identifying capabilities that may need to be declared in the application package
-manifest.
+5. 有关识别可能需要在应用程序包清单中声明的功能的信息，请参见[应用程序功能分析器](../profiler/application-capability-profiler.md)。
